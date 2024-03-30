@@ -17,8 +17,8 @@ void setup() {
   TCCR1A = 0;
   TCCR1B = 0;
   
-  //Set prescaler 256
-  TCCR1B |= (1 << CS12);
+  //Set prescaler 1024
+  TCCR1B |= (1 << CS12) | (0 << CS11) | (1 << CS10);
 
   //Set the timer in overflow mode
   TIMSK1 |= (1 << TOIE1);
@@ -32,13 +32,17 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(count);
-
+  noInterrupts();
+  //Serial.println(TCNT1);
   if(tooSlow==true){
     Serial.println("TOO SLOW!");
   }
+  
+  Serial.println(count);
+  
+  interrupts();
 
-  delay(500);
+  delay(1000);
 }
 
 ISR(TIMER1_OVF_vect){
@@ -48,5 +52,6 @@ ISR(TIMER1_OVF_vect){
 void resetTimer(){
   count = TCNT1;
   TCNT1 = 0;
+  tooSlow = false;
 }
 
